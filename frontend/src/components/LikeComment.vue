@@ -5,11 +5,16 @@
         <span class="info">
           Likes: {{ image.likes.length }}
           <br>
-          Liked: {{ image.likedByMe }}
+          <div v-if="image.likes.includes($store.state.userId)">
+            Liked
+          </div>
+          <div v-else>
+            Not liked
+          </div>
           <br>
         </span>
         <div class="ui">
-          <input type="button" value="Like">
+          <input type="button" value="Like" @click="$store.dispatch('like', image.imageId)">
           <div class="comments">
             <input type="text" placeholder="Comment...">
             <input type="button" value="Comment" @click="comment">

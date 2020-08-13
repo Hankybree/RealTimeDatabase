@@ -31,9 +31,6 @@ export const client = {
     comment: () => {
 
     },
-    like: (socket) => {
-        socket.send(JSON.stringify({ status: 2, likeImageId: 1}))
-    },
     readMessage: () => {
 
     },

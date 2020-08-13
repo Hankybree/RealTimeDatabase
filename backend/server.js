@@ -12,6 +12,7 @@ const server = app.listen(8500, () => {
 })
 
 var database
+let clients = []
 
 sqlite
     .open({ driver: sqlite3.Database, filename: 'database.sqlite' })
@@ -22,6 +23,12 @@ sqlite
 const wss = new WebSocketServer({ server: server })
 
 wss.on('connection', (socket, request) => {
+
+    console.log(request.socket.remoteAddress + ' has connected')
+    console.log('Clients conntected: ' + wss.clients.size)
+
+    clients.push(socket)
+
     sendInitialData(socket)
 
     socket.onmessage = (message) => {
@@ -30,9 +37,21 @@ wss.on('connection', (socket, request) => {
 
         if (data.status === 1) {
             console.log(data.msg)
-        } else if (status === 2) {
-            
+        } else if (data.status === 2) {
+            like(data, socket)
         }
+    }
+
+    socket.onclose = () => {
+
+        console.log(request.socket.remoteAddress + ' has disconnected')
+        console.log('Clients conntected: ' + wss.clients.size)
+
+        // Remove socket from client list
+        clients.splice(clients.indexOf(socket), 1)
+
+        // Close socket
+        socket.close()
     }
 })
 
@@ -64,24 +83,35 @@ function sendInitialData(socket) {
                         images[i].comments = comments
                     }
 
-                    socket.send(JSON.stringify({ status: 1, data: images}))
+                    socket.send(JSON.stringify({ status: 1, data: images }))
                 })
         })
 }
 
-function like(data, socket, isLiking) {
+function like(data) {
 
     database.all('SELECT * FROM likes WHERE likeImageId=?', [data.likeImageId])
         .then((likes) => {
-            if (likes[0].likeUserId === data.likeUserId) {
-                database.run('DELETE FROM likes WHERE likeUserId=?', [data.likeUserId])
+
+            if(likes) {
+                console.log(likes)
+            }
+
+            if (likes !== undefined && likes.some(like => like.likeUserId === data.likeUserId)) {
+                database.run('DELETE FROM likes WHERE (likeUserId=? AND likeImageId=?)', [data.likeUserId, data.likeImageId])
                     .then(() => {
-                        sendInitialData(socket)
+                        clients.forEach((client) => {
+                            sendInitialData(client)
+                        })
                     })
             } else {
-                database.run('INSERT INTO likes (likeImageId, likeUserId) VALUES (?, ?)', [data.likeImageId, likeUserId])
+                database.run('INSERT INTO likes (likeImageId, likeUserId) VALUES (?, ?)', [data.likeImageId, data.likeUserId])
                     .then(() => {
-                        sendInitialData(socket)
+                        clients.forEach((client) => {
+
+                            console.log('Insert')
+                            sendInitialData(client)
+                        })
                     })
             }
         })

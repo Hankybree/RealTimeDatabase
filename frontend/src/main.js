@@ -21,6 +21,7 @@ const router = new VueRouter({
 const store = new Vuex.Store({
   state: {
     socket: null,
+    userId: 1,
     images: []
   },
   mutations: {
