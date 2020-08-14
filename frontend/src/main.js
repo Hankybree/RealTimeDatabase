@@ -22,6 +22,7 @@ const store = new Vuex.Store({
   state: {
     socket: null,
     userId: 1,
+    message: '',
     images: []
   },
   mutations: {
@@ -30,6 +31,9 @@ const store = new Vuex.Store({
     },
     setImages(state, newImages) {
       state.images = newImages
+    },
+    setMessage(state, newMessage) {
+      state.message = newMessage
     }
   },
   actions: actions

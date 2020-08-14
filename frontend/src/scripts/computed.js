@@ -6,5 +6,13 @@ export const computed = {
         set(newImages) {
             this.$store.commit('setImages', newImages)
         }
+    },
+    message: {
+        get() {
+            return this.$store.state.message
+        },
+        set(newMessage) {
+            this.$store.commit('setMessage', newMessage)
+        }
     }
 }

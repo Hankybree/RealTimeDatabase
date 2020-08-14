@@ -16,13 +16,14 @@
         <div class="ui">
           <input type="button" value="Like" @click="$store.dispatch('like', image.imageId)">
           <div class="comments">
-            <input type="text" placeholder="Comment...">
-            <input type="button" value="Comment" @click="comment">
+            <input v-model="message" placeholder="Comment...">
+            <input type="button" value="Comment" @click="$store.dispatch('comment', image.imageId)">
           </div>
         </div>
         Comments:
         <div :key="index" v-for="(comment, index) in image.comments">
-          {{ comment.comment }}
+          {{ comment.commentMessage }}
+          <input v-if="comment.commentUserId === $store.state.userId" type="button" value="Delete" @click="$store.dispatch('deleteComment', comment.commentId)">
         </div>
       </div>
     </div>
@@ -35,6 +36,10 @@ import { computed } from '../scripts/computed.js'
 export default {
   beforeCreate() {
     this.$store.dispatch('connect')
+    console.log(window.innerHeight)
+    window.addEventListener('scroll', () => {
+      console.log(window.scrollY)
+    })
   },
   name: "LikeComment",
   computed: computed,
@@ -47,9 +52,9 @@ export default {
 </script>
 
 <style scoped>
-  .frame {
-    width: 19vw;
-    height: 19vw;
+  .image {
+    width: 30vw;
+    height: 30vw;
     border: solid 0.5px black;
     border-radius: 1em;
     margin: 5px;

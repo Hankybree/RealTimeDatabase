@@ -28,9 +28,6 @@ export const client = {
     sendMessage: (socket, message) => {
         socket.send(JSON.stringify(message))
     },
-    comment: () => {
-
-    },
     readMessage: () => {
 
     },
