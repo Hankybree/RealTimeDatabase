@@ -12,13 +12,8 @@ export const client = {
             
             let data = JSON.parse(message.data)
 
-            if (data.status === 1) {
-
-                context.commit('setImages', data.data)
-                console.log(data.data)
-            } else if (data.status === 2) {
-                context.commit('setImages', data.data)
-            }
+            context.commit('setImages', data.data)
+            console.log(data.data)
         }
 
         context.state.socket.onclose = () => {

@@ -13,5 +13,8 @@ export const actions = {
     },
     deleteComment(context, commentId) {
         context.state.socket.send(JSON.stringify({ status: 4, commentId: commentId }))
+    },
+    sendCurrentPage(context) {
+        context.state.socket.send(JSON.stringify({ status: 5, currentPage: context.state.currentPage }))
     }
 }

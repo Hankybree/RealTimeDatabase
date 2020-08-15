@@ -59,9 +59,10 @@ wss.on('connection', (socket, request) => {
     }
 })
 
-function sendData(socket) {
+function sendData(socket, currentPage) {
 
-    database.all('SELECT * FROM images')
+    // 'LIMIT 6 OFFSET ?', [currentPage]
+    database.all('SELECT * FROM images ORDER BY imageId DESC')
         .then((images) => {
 
             database.all('SELECT * FROM images LEFT JOIN likes ON images.imageId = likes.likeImageId LEFT JOIN comments ON images.imageId = comments.commentImageId')

@@ -14,7 +14,7 @@ Vue.use(Vuex)
 const router = new VueRouter({
   routes: [
     { component: LogIn, path: '/' },
-    { component: LikeComment, path: '/likecomment'}
+    { component: LikeComment, path: '/likecomment' }
   ]
 })
 
@@ -23,6 +23,7 @@ const store = new Vuex.Store({
     socket: null,
     userId: 1,
     message: '',
+    currentPage: 1,
     images: []
   },
   mutations: {
@@ -32,8 +33,19 @@ const store = new Vuex.Store({
     setImages(state, newImages) {
       state.images = newImages
     },
+    appendImages(state, newImages) {
+      newImages.forEach(newImage => {
+        if(!state.images.some(image => image.imageId === newImage.imageId)) {
+          state.images.push(newImage)
+        }
+      })
+    },
     setMessage(state, newMessage) {
       state.message = newMessage
+    },
+    setCurrentPage(state, newCurrentPage) {
+      state.currentPage = newCurrentPage
+      this.$store.dispatch('sendCurrentPage')
     }
   },
   actions: actions

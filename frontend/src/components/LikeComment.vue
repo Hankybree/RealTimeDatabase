@@ -37,8 +37,11 @@ export default {
   beforeCreate() {
     this.$store.dispatch('connect')
     console.log(window.innerHeight)
+    console.log(document.body.offsetHeight)
     window.addEventListener('scroll', () => {
-      console.log(window.scrollY)
+      // if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        
+      // }
     })
   },
   name: "LikeComment",
@@ -53,8 +56,8 @@ export default {
 
 <style scoped>
   .image {
-    width: 30vw;
-    height: 30vw;
+    width: 18vw;
+    /* height: 18vw; */
     border: solid 0.5px black;
     border-radius: 1em;
     margin: 5px;
