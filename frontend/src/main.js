@@ -42,10 +42,6 @@ const store = new Vuex.Store({
     },
     setMessage(state, newMessage) {
       state.message = newMessage
-    },
-    setCurrentPage(state, newCurrentPage) {
-      state.currentPage = newCurrentPage
-      this.$store.dispatch('sendCurrentPage')
     }
   },
   actions: actions

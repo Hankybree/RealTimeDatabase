@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div :key="index" v-for="(image, index) in images">
+    <div :key="image.imageId" v-for="image in images">
       <div class="image">
         <span class="info">
           Likes: {{ image.likes.length }}
@@ -21,7 +21,7 @@
           </div>
         </div>
         Comments:
-        <div :key="index" v-for="(comment, index) in image.comments">
+        <div :key="comment.commentId" v-for="comment in image.comments">
           {{ comment.commentMessage }}
           <input v-if="comment.commentUserId === $store.state.userId" type="button" value="Delete" @click="$store.dispatch('deleteComment', comment.commentId)">
         </div>
@@ -36,28 +36,22 @@ import { computed } from '../scripts/computed.js'
 export default {
   beforeCreate() {
     this.$store.dispatch('connect')
-    console.log(window.innerHeight)
-    console.log(document.body.offsetHeight)
-    window.addEventListener('scroll', () => {
-      // if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    // console.log(window.innerHeight)
+    // console.log(document.body.offsetHeight)
+    // window.addEventListener('scroll', () => {
+    //   // if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
         
-      // }
-    })
+    //   // }
+    // })
   },
-  name: "LikeComment",
-  computed: computed,
-  methods: {
-    comment() {
-      
-    }
-  }
+  name: 'LikeComment',
+  computed: computed
 }
 </script>
 
 <style scoped>
   .image {
     width: 18vw;
-    /* height: 18vw; */
     border: solid 0.5px black;
     border-radius: 1em;
     margin: 5px;

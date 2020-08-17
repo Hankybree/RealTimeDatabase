@@ -14,5 +14,13 @@ export const computed = {
         set(newMessage) {
             this.$store.commit('setMessage', newMessage)
         }
+    },
+    explorerId: {
+        get() {
+            return this.$store.state.explorerId
+        },
+        set(newExplorerId) {
+            this.$store.commit('setExplorerId', newExplorerId)
+        }
     }
 }

@@ -1,12 +1,12 @@
 <template>
   <div class="content">
     <input type="button" value="Log in" @click="login" />
-    <div id="image-container">
+    <!-- <div id="image-container">
       <div :key="index" v-for="(image, index) in images">
         <img class="image" src="../assets/1.jpg" alt="">
         <img class="image" src="../assets/2.jpg" alt="">
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -23,6 +23,9 @@
       login() {
         console.log('Logged in')
         window.location.replace('http://localhost:8080/#/likecomment')
+      },
+      changeValue() {
+        this.$store.commit('setTest', 1)
       }
     }
   }

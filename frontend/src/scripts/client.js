@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 export const client = {
     connect: (context) => {
         context.commit('setSocket', new WebSocket('ws://localhost:8500'))
@@ -12,8 +14,24 @@ export const client = {
             
             let data = JSON.parse(message.data)
 
-            context.commit('setImages', data.data)
-            console.log(data.data)
+            console.log(data)
+
+            if (data.status === 1) {
+                context.commit('setImages', data.data)
+            } else if (data.status === 2) {
+
+                for (let i = 0; i < context.state.images.length; i++) {
+                    for (let j = 0; j < data.data.length; j++) {
+                        if (context.state.images[i].imageId === data.data[j].imageId) {
+                            //context.commit('setLikes', data.data[j].likes, i)
+                            Vue.set(context.state.images[i], 'likes', data.data[j].likes)
+                        }
+                    }
+                }
+                
+                //context.commit('setExplorerId', context.state.explorerId + 1)
+            }
+            
         }
 
         context.state.socket.onclose = () => {
