@@ -29,8 +29,6 @@ wss.on('connection', (socket, request) => {
 
     clients.push(socket)
 
-    sendData(socket, 1)
-
     socket.onmessage = (message) => {
         let data = JSON.parse(message.data)
         console.log(data)
@@ -38,11 +36,11 @@ wss.on('connection', (socket, request) => {
         if (data.status === 1) {
             console.log(data.msg)
         } else if (data.status === 2) {
-            like(data)
+            like(data, 2, data.currentPage)
         } else if (data.status === 3) {
-            comment(data)
+            comment(data, 3, data.currentPage)
         } else if (data.status === 4) {
-            deleteComment(data)
+            deleteComment(data, 4, data.currentPage)
         }
     }
 
@@ -60,42 +58,27 @@ wss.on('connection', (socket, request) => {
 })
 
 app.get('/images', (req, res) => {
-    
-    database.all('SELECT * FROM images ORDER BY imageId DESC')
+
+    getImages(req.get('CurrentPage'))
         .then((images) => {
-
-            database.all('SELECT * FROM images LEFT JOIN likes ON images.imageId = likes.likeImageId LEFT JOIN comments ON images.imageId = comments.commentImageId')
-                .then((imageData) => {
-
-                    for (let i = 0; i < images.length; i++) {
-
-                        let likes = []
-                        let comments = []
-
-                        for (let j = 0; j < imageData.length; j++) {
-
-                            if (imageData[j].likeImageId === images[i].imageId && !likes.includes(imageData[j].likeUserId)) {
-                                likes.push(imageData[j].likeUserId)
-                            }
-
-                            if (imageData[j].commentImageId === images[i].imageId && !comments.some(comment => comment.commentId === imageData[j].commentId)) {
-                                comments.push({ commentId: imageData[j].commentId, commentUserId: imageData[j].commentUserId, commentMessage: imageData[j].commentMessage })
-                            }
-                        }
-
-                        images[i].likes = likes
-                        images[i].comments = comments
-                    }
-
-                    res.send(JSON.stringify({ status: 1, data: images }))
-                })
+            res.send(JSON.stringify({ status: 1, data: images }))
         })
 })
 
-function sendData(socket, status) {
+function sendData(socket, status, currentPage) {
 
-    // 'LIMIT 6 OFFSET ?', [currentPage]
-    database.all('SELECT * FROM images ORDER BY imageId DESC')
+    getImages(currentPage)
+        .then((images) => {
+            socket.send(JSON.stringify({ status: status, data: images }))
+        })
+}
+
+function getImages(currentPage) {
+
+    // LIMIT 10 OFFSET currentPage
+
+    return new Promise((resolve, reject) => {
+        database.all('SELECT * FROM images ORDER BY imageId DESC LIMIT 5 OFFSET ?', [currentPage * 5])
         .then((images) => {
 
             database.all('SELECT * FROM images LEFT JOIN likes ON images.imageId = likes.likeImageId LEFT JOIN comments ON images.imageId = comments.commentImageId')
@@ -121,12 +104,14 @@ function sendData(socket, status) {
                         images[i].comments = comments
                     }
 
-                    socket.send(JSON.stringify({ status: status, data: images }))
+                    resolve(images)
+                    // socket.send(JSON.stringify({ status: status, data: images }))
                 })
         })
+    })
 }
 
-function like(data) {
+function like(data, status, currentPage) {
 
     database.all('SELECT * FROM likes WHERE likeImageId=?', [data.likeImageId])
         .then((likes) => {
@@ -139,36 +124,36 @@ function like(data) {
                 database.run('DELETE FROM likes WHERE (likeUserId=? AND likeImageId=?)', [data.likeUserId, data.likeImageId])
                     .then(() => {
                         clients.forEach((client) => {
-                            sendData(client, 2)
+                            sendData(client, status, currentPage)
                         })
                     })
             } else {
                 database.run('INSERT INTO likes (likeImageId, likeUserId) VALUES (?, ?)', [data.likeImageId, data.likeUserId])
                     .then(() => {
                         clients.forEach((client) => {
-                            sendData(client, 2)
+                            sendData(client, status, currentPage)
                         })
                     })
             }
         })
 }
 
-function comment(data) {
+function comment(data, status, currentPage) {
 
     database.run('INSERT INTO comments (commentImageId, commentUserId, commentMessage) VALUES (?, ?, ?)', [data.commentImageId, data.commentUserId, data.commentMessage])
         .then(() => {
             clients.forEach((client) => {
-                sendData(client, 3)
+                sendData(client, status, currentPage)
             })
         })
 }
 
-function deleteComment(data) {
+function deleteComment(data, status, currentPage) {
 
     database.run('DELETE FROM comments WHERE (commentId=?)', [data.commentId])
         .then(() => {
             clients.forEach((client) => {
-                sendData(client, 4)
+                sendData(client, status, currentPage)
             })
         })
 }

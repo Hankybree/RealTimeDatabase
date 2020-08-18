@@ -4,7 +4,7 @@
     <!-- <div id="image-container">
       <div :key="index" v-for="(image, index) in images">
         <img class="image" src="../assets/1.jpg" alt="">
-        <img class="image" src="../assets/2.jpg" alt="">
+        <img class="image2" src="../assets/2.jpg" alt="">
       </div>
     </div> -->
   </div>
@@ -39,9 +39,17 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    margin-top: 0px;
+    padding: 0;
   }
   .image {
     width: 19vw;
     margin: 5px;
+    padding: 0;
+  }
+  .image2 {
+    width: 19vw;
+    margin: 10px 5px;
+    padding: 0;
   }
 </style>

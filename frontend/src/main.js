@@ -23,7 +23,7 @@ const store = new Vuex.Store({
     socket: null,
     userId: 1,
     message: '',
-    currentPage: 1,
+    currentPage: 0,
     images: []
   },
   mutations: {
@@ -42,6 +42,9 @@ const store = new Vuex.Store({
     },
     setMessage(state, newMessage) {
       state.message = newMessage
+    },
+    setCurrentPage(state, newCurrentPage) {
+      state.currentPage = newCurrentPage
     }
   },
   actions: actions

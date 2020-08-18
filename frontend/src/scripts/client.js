@@ -18,13 +18,16 @@ export const client = {
 
             if (data.status === 1) {
                 context.commit('setImages', data.data)
-            } else if (data.status === 2) {
+            } else if (data.status === 2 || data.status === 3 || data.status === 4) {
 
                 for (let i = 0; i < context.state.images.length; i++) {
                     for (let j = 0; j < data.data.length; j++) {
                         if (context.state.images[i].imageId === data.data[j].imageId) {
-                            //context.commit('setLikes', data.data[j].likes, i)
-                            Vue.set(context.state.images[i], 'likes', data.data[j].likes)
+                            if(data.status === 2) {
+                                Vue.set(context.state.images[i], 'likes', data.data[j].likes)
+                            } else if (data.status === 3 || data.status === 4) {
+                                Vue.set(context.state.images[i], 'comments', data.data[j].comments)
+                            }
                         }
                     }
                 }
