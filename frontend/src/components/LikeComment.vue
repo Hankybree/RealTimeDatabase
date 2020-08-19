@@ -36,7 +36,7 @@
             v-if="comment.commentUserId === $store.state.userId"
             type="button"
             value="Delete"
-            @click="$store.dispatch('deleteComment', comment.commentId)"
+            @click="$store.dispatch('deleteComment', { imageId: image.imageId, commentId: comment.commentId })"
           />
         </div>
       </div>
@@ -76,6 +76,7 @@
           .then((result) => {
             this.$store.commit('appendImages', result.data)
             this.loading = false
+            console.log(result)
           })
       },
       handleScroll() {
